@@ -1,0 +1,63 @@
+{
+    "name": "eventemitter0",
+    "version": "1.0.0",
+    "description": "event emitter for node and browser",
+    "main": "./dist/index.js",
+    "scripts": {
+        "build": "rollup -c",
+        "prepublishOnly": "npm run build"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.4.0",
+        "@babel/plugin-transform-runtime": "^7.4.0",
+        "@babel/polyfill": "^7.4.0",
+        "@babel/preset-env": "^7.4.1",
+        "rollup": "^1.7.0",
+        "rollup-plugin-babel": "^4.3.2",
+        "rollup-plugin-clear": "^2.0.7",
+        "rollup-plugin-node-resolve": "^4.0.1",
+        "rollup-plugin-progress": "^1.1.1",
+        "rollup-plugin-strip": "^1.2.1",
+        "rollup-plugin-terser": "^4.0.4"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/DasRed/js-eventemitter.git"
+    },
+    "author": "",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/DasRed/js-eventemitter/issues"
+    },
+    "homepage": "https://github.com/DasRed/js-eventemitter#readme",
+    "keywords": [
+        "EventEmitter",
+        "EventEmitter2",
+        "EventEmitter3",
+        "EventEmitter4",
+        "eventemitter",
+        "eventemitter2",
+        "eventemitter3",
+        "eventemitter4",
+        "eventemitter-js",
+        "eventemitterjs",
+        "jseventemitter",
+        "js-eventemitter",
+        "event emitter",
+        "es6 module eventemitter",
+        "esm eventemitter",
+        "mjs eventemitter",
+        "event",
+        "on",
+        "once",
+        "off",
+        "addEventListener",
+        "addListener",
+        "trigger",
+        "emits",
+        "emitter",
+        "listeners",
+        "listener",
+        "listen"
+    ]
+}

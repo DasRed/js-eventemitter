@@ -1,0 +1,9 @@
+/node_modules
+/.env
+/.idea
+/log
+/src
+/.gitignore
+/.npmignore
+/rollup.config.js
+test.js
