@@ -21,7 +21,7 @@ const FILTERS = {
     CALLBACK:         (/** EventEmitterListener */ listener, /** function */ callback, /** object */ context) => listener.callback !== callback,
 };
 
-class EventEmitter {
+export default class EventEmitter {
     /**
      *
      * @param {EventEmitterConstructorOptions}
@@ -68,7 +68,7 @@ class EventEmitter {
 
     /**
      *
-     * @param {string|null|undefined} name
+     * @param {string|null|undefined} [name]
      * @param {Function|null|undefined} [callback]
      * @param {object|null|undefined} [context]
      * @return {EventEmitter}
@@ -172,7 +172,7 @@ class EventEmitter {
 
     /**
      *
-     * @param {string|null} name
+     * @param {string|null} [name]
      * @param {Function|null} [callback]
      * @param {object} [context]
      * @return {EventEmitter}
@@ -183,7 +183,7 @@ class EventEmitter {
 
     /**
      *
-     * @param {string|null} name
+     * @param {string|null} [name]
      * @param {Function|null} [callback]
      * @param {object} [context]
      * @return {EventEmitter}
@@ -203,5 +203,3 @@ class EventEmitter {
         return this;
     }
 }
-
-export default EventEmitter;

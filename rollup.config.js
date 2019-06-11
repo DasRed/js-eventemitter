@@ -1,9 +1,9 @@
 import resolve from 'rollup-plugin-node-resolve';
 import progress from 'rollup-plugin-progress';
-import strip from 'rollup-plugin-strip';
 import babel from 'rollup-plugin-babel';
 import {terser} from "rollup-plugin-terser";
 import clear from "rollup-plugin-clear";
+import commonjs from 'rollup-plugin-commonjs';
 
 // https://rollupjs.org/guide/en#big-list-of-options
 export default [
@@ -16,14 +16,15 @@ export default [
             name:   'EventEmitter',
         },
         plugins: [
-            resolve(),
             clear({targets: ['./dist']}),
             progress({clearLine: false}),
+            resolve(),
+            commonjs(),
         ]
     },
     // ES2015 Minified
     {
-        input:   './src/index.js',
+        input:   './src/eventEmitter.js',
         output:  {
             file:      './dist/eventEmitter.min.js',
             format:    'iife',
@@ -32,25 +33,24 @@ export default [
             sourcemap: true,
         },
         plugins: [
-            resolve(),
             progress({clearLine: false}),
-            strip({
-                // set this to `false` if you don't want to remove debugger statements
-                debugger: true,
-
-                // set this to `false` if you're not using sourcemaps – defaults to `true`
-                sourceMap: true,
-            }),
+            resolve(),
+            commonjs(),
             babel({
-                exclude:         'node_modules/**',
                 runtimeHelpers:  false,
                 externalHelpers: false,
                 babelrc:         false,
+                ignore:          [/\/core-js\//],
                 presets:         [
                     [
-                        "@babel/env",
+                        '@babel/preset-env',
                         {
-                            targets: {
+                            useBuiltIns: 'usage',
+                            corejs:      {
+                                version:   2,
+                                proposals: true
+                            },
+                            targets:     {
                                 ie:      '11',
                                 edge:    '17',
                                 firefox: '60',
@@ -66,7 +66,7 @@ export default [
     },
     // ES2015 None-Minified
     {
-        input:   './src/index.js',
+        input:   './src/eventEmitter.js',
         output:  {
             file:      './dist/eventEmitter.js',
             format:    'iife',
@@ -75,25 +75,24 @@ export default [
             sourcemap: true,
         },
         plugins: [
-            resolve(),
             progress({clearLine: false}),
-            strip({
-                // set this to `false` if you don't want to remove debugger statements
-                debugger: true,
-
-                // set this to `false` if you're not using sourcemaps – defaults to `true`
-                sourceMap: true,
-            }),
+            resolve(),
+            commonjs(),
             babel({
-                exclude:         'node_modules/**',
                 runtimeHelpers:  false,
                 externalHelpers: false,
                 babelrc:         false,
+                ignore:          [/\/core-js\//],
                 presets:         [
                     [
-                        "@babel/env",
+                        '@babel/preset-env',
                         {
-                            targets: {
+                            useBuiltIns: 'usage',
+                            corejs:      {
+                                version:   2,
+                                proposals: true
+                            },
+                            targets:     {
                                 ie:      '11',
                                 edge:    '17',
                                 firefox: '60',
@@ -106,49 +105,4 @@ export default [
             }),
         ]
     },
-    // ES Module Minified
-    {
-        input:   './src/eventEmitter.js',
-        output:  {
-            file:      './dist/eventEmitter.esm.min.js',
-            format:    'esm',
-            name:      'EventEmitter',
-            compact:   true,
-            sourcemap: true,
-        },
-        plugins: [
-            resolve(),
-            progress({clearLine: false}),
-            strip({
-                // set this to `false` if you don't want to remove debugger statements
-                debugger: true,
-
-                // set this to `false` if you're not using sourcemaps – defaults to `true`
-                sourceMap: true,
-            }),
-            terser({sourcemap: true}),
-        ]
-    },
-    // ES Module None-Minified
-    {
-        input:   './src/eventEmitter.js',
-        output:  {
-            file:      './dist/eventEmitter.esm.js',
-            format:    'esm',
-            name:      'EventEmitter',
-            compact:   false,
-            sourcemap: true,
-        },
-        plugins: [
-            resolve(),
-            progress({clearLine: false}),
-            strip({
-                // set this to `false` if you don't want to remove debugger statements
-                debugger: true,
-
-                // set this to `false` if you're not using sourcemaps – defaults to `true`
-                sourceMap: true,
-            }),
-        ]
-    }
 ];
