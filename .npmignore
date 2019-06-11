@@ -2,7 +2,6 @@
 /.env
 /.idea
 /log
-/src
 /.gitignore
 /.npmignore
 /rollup.config.js
