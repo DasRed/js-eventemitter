@@ -5,41 +5,43 @@ import clear from "rollup-plugin-clear";
 import commonjs from '@rollup/plugin-commonjs';
 
 const babelOptionsES5 = {
-    runtimeHelpers: false,
+    runtimeHelpers:  false,
     externalHelpers: false,
-    babelrc: false,
-    presets: [
+    babelrc:         false,
+    presets:         [
         [
             "@babel/env",
             {
                 targets: {
-                    ie: '11',
-                    edge: '17',
+                    ie:      '11',
+                    edge:    '17',
                     firefox: '60',
-                    chrome: '71',
-                    safari: '11.1',
+                    chrome:  '71',
+                    safari:  '11.1',
                 },
             }
         ]
     ],
+    plugins:         ['@babel/plugin-proposal-optional-chaining']
 };
 
 const babelOptionsES2018 = {
-    runtimeHelpers: false,
+    runtimeHelpers:  false,
     externalHelpers: false,
-    babelrc: false,
+    babelrc:         false,
+    plugins:         ['@babel/plugin-proposal-optional-chaining']
 };
 
 // https://rollupjs.org/guide/en#big-list-of-options
 export default [
     // ES2015 Minified
     {
-        input: './src/eventEmitter.js',
-        output: {
-            file: './dist/eventEmitter.min.js',
-            format: 'iife',
-            name: 'EventEmitter',
-            compact: true,
+        input:   './src/eventEmitter.js',
+        output:  {
+            file:      './dist/eventEmitter.min.js',
+            format:    'iife',
+            name:      'EventEmitter',
+            compact:   true,
             sourcemap: true,
         },
         plugins: [
@@ -52,12 +54,12 @@ export default [
     },
     // ES2015 None-Minified
     {
-        input: './src/eventEmitter.js',
-        output: {
-            file: './dist/eventEmitter.js',
-            format: 'iife',
-            name: 'EventEmitter',
-            compact: false,
+        input:   './src/eventEmitter.js',
+        output:  {
+            file:      './dist/eventEmitter.js',
+            format:    'iife',
+            name:      'EventEmitter',
+            compact:   false,
             sourcemap: true,
         },
         plugins: [
@@ -68,11 +70,11 @@ export default [
     },
     // ES Modules Minified
     {
-        input: './src/eventEmitter.js',
-        output: {
-            file: './dist/eventEmitter.esm.min.js',
-            format: 'esm',
-            compact: true,
+        input:   './src/eventEmitter.js',
+        output:  {
+            file:      './dist/eventEmitter.esm.min.js',
+            format:    'esm',
+            compact:   true,
             sourcemap: true,
         },
         plugins: [
@@ -83,11 +85,11 @@ export default [
     },
     // ES Modules None-Minified
     {
-        input: './src/eventEmitter.js',
-        output: {
-            file: './dist/eventEmitter.esm.js',
-            format: 'esm',
-            compact: false,
+        input:   './src/eventEmitter.js',
+        output:  {
+            file:      './dist/eventEmitter.esm.js',
+            format:    'esm',
+            compact:   false,
             sourcemap: true,
         },
         plugins: [

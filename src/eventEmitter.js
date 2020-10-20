@@ -30,8 +30,8 @@ export default class EventEmitter {
         /** @type {Object<string,EventEmitterListener[]>} */
         this._listeners = {};
 
-        Object.entries(on).forEach(([name, /** EventEmitterCaller|Function */ caller]) => this.on(name, caller instanceof Function ? caller : caller.callback, caller instanceof Function ? undefined : caller.context));
-        Object.entries(once).forEach(([name, /** EventEmitterCaller|Function */ caller]) => this.once(name, caller instanceof Function ? caller : caller.callback, caller instanceof Function ? undefined : caller.context));
+        Object.entries(on).forEach(([name, /** EventEmitterCaller|Function */ caller]) => this.on(name, caller?.callback || caller, caller?.context));
+        Object.entries(once).forEach(([name, /** EventEmitterCaller|Function */ caller]) => this.once(name, caller?.callback || caller, caller?.context));
     }
 
     /**
