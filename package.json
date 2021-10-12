@@ -1,8 +1,9 @@
 {
     "name": "eventemitter0",
-    "version": "1.1.6",
+    "version": "2.0.0",
     "description": "event emitter for node and browser",
-    "main": "./dist/index.js",
+    "main": "./src/eventEmitter.js",
+    "type": "module",
     "scripts": {
         "build": "rollup -c",
         "prepublishOnly": "npm run build"
