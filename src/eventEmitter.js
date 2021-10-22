@@ -22,6 +22,8 @@ const FILTERS = {
 };
 
 export default class EventEmitter {
+    static CATCH_ALL = '*';
+
     /**
      *
      * @param {EventEmitterConstructorOptions}
@@ -199,6 +201,7 @@ export default class EventEmitter {
      */
     trigger(name, ...args) {
         (this._listeners[name] || []).forEach((/** EventEmitterListener */ listener) => listener.callback.call(listener.context, ...args));
+        (this._listeners[EventEmitter.CATCH_ALL] || []).forEach((/** EventEmitterListener */ listener) => listener.callback.call(listener.context, name, ...args));
 
         return this;
     }
