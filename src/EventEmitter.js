@@ -25,34 +25,21 @@ export default class EventEmitter {
     /**
      *
      * @param {EventEmitter.EventName} name
-     * @param {EventEmitter.EventListener} callback
-     * @param {EventEmitter.EventContext} [context]
-     * @return {EventEmitter}
-     */
-    addEventListener(name, callback, context) {
-        return this.on(name, callback, context);
-    }
-
-    /**
-     *
-     * @param {EventEmitter.EventName} name
-     * @param {EventEmitter.EventListener} callback
-     * @param {EventEmitter.EventContext} [context]
-     * @return {EventEmitter}
-     */
-    addListener(name, callback, context) {
-        return this.on(name, callback, context);
-    }
-
-    /**
-     *
-     * @param {EventEmitter.EventName} name
      * @param {*[]} [args]
-     * @return {EventEmitter}
+     * @returns {Promise<this>}
      */
-    emit(name, ...args) {
-        (this._listeners[name] || []).forEach((listener) => listener.callback.call(listener.context, ...args));
-        (this._listeners[EventEmitter.CATCH_ALL] || []).forEach((listener) => listener.callback.call(listener.context, name, ...args));
+    async emit(name, ...args) {
+        if (this._listeners[name] !== undefined) {
+            for (const listener of this._listeners[name]) {
+                await listener.callback.call(listener.context, ...args)
+            }
+        }
+
+        if (this._listeners[EventEmitter.CATCH_ALL] !== undefined) {
+            for (const listener of this._listeners[EventEmitter.CATCH_ALL]) {
+                await listener.callback.call(listener.context, name, ...args)
+            }
+        }
 
         return this;
     }
@@ -62,7 +49,7 @@ export default class EventEmitter {
      * @param {EventEmitter.EventName|null} [name]
      * @param {EventEmitter.EventListener|null} [callback]
      * @param {EventEmitter.EventContext|null} [context]
-     * @return {EventEmitter}
+     * @returns {this}
      */
     off(name, callback, context) {
         let listener = [];
@@ -132,7 +119,7 @@ export default class EventEmitter {
      * @param {EventEmitter.EventName} name
      * @param {EventEmitter.EventListener} callback
      * @param {EventEmitter.EventContext} [context]
-     * @return {EventEmitter}
+     * @returns {this}
      */
     on(name, callback, context) {
         this._listeners[name] = this._listeners[name] || [];
@@ -149,45 +136,14 @@ export default class EventEmitter {
      * @param {EventEmitter.EventName} name
      * @param {EventEmitter.EventListener} callback
      * @param {EventEmitter.EventContext} [context]
-     * @return {EventEmitter}
+     * @returns {this}
      */
     once(name, callback, context) {
-        const wrap = (...args) => {
+        const wrap = async (...args) => {
             this.off(name, wrap, context);
-            return callback(...args);
+            return await callback(...args);
         };
 
         return this.on(name, wrap, context);
-    }
-
-    /**
-     *
-     * @param {EventEmitter.EventName|null} [name]
-     * @param {EventEmitter.EventListener|null} [callback]
-     * @param {EventEmitter.EventContext} [context]
-     * @return {EventEmitter}
-     */
-    removeEventListener(name, callback, context) {
-        return this.off(name, callback, context);
-    }
-
-    /**
-     *
-     * @param {EventEmitter.EventName|null} [name]
-     * @param {EventEmitter.EventListener|null} [callback]
-     * @param {EventEmitter.EventContext} [context]
-     * @return {EventEmitter}
-     */
-    removeListener(name, callback, context) {
-        return this.off(name, callback, context);
-    }
-
-    /**
-     * @param {EventEmitter.EventName} name
-     * @param {*[]} [args]
-     * @return {EventEmitter}
-     */
-    trigger(name, ...args) {
-        return this.emit(name, ...args)
     }
 }

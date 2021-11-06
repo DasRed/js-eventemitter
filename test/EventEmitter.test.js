@@ -40,70 +40,10 @@ describe('EventEmitter', () => {
         });
     });
 
-    it('addEventListener', () => {
-        const emitter   = new EventEmitter();
-        const aliasStub = sinon.stub(emitter, 'on').returnsThis();
-
-        assert.strict.equal(emitter.addEventListener('nuff', callbackA, context1), emitter);
-        assert.strict.equal(aliasStub.callCount, 1);
-        assert.strict.equal(aliasStub.firstCall.args.length, 3);
-        assert.strict.equal(aliasStub.firstCall.args[0], 'nuff');
-        assert.strict.equal(aliasStub.firstCall.args[1], callbackA);
-        assert.strict.equal(aliasStub.firstCall.args[2], context1);
-    });
-
-    it('addListener', () => {
-        const emitter   = new EventEmitter();
-        const aliasStub = sinon.stub(emitter, 'on').returnsThis();
-
-        assert.strict.equal(emitter.addListener('nuff', callbackA, context1), emitter);
-        assert.strict.equal(aliasStub.callCount, 1);
-        assert.strict.equal(aliasStub.firstCall.args.length, 3);
-        assert.strict.equal(aliasStub.firstCall.args[0], 'nuff');
-        assert.strict.equal(aliasStub.firstCall.args[1], callbackA);
-        assert.strict.equal(aliasStub.firstCall.args[2], context1);
-    });
-
-    it('removeEventListener', () => {
-        const emitter   = new EventEmitter();
-        const aliasStub = sinon.stub(emitter, 'off').returnsThis();
-
-        assert.strict.equal(emitter.removeEventListener('nuff', callbackA, context1), emitter);
-        assert.strict.equal(aliasStub.callCount, 1);
-        assert.strict.equal(aliasStub.firstCall.args.length, 3);
-        assert.strict.equal(aliasStub.firstCall.args[0], 'nuff');
-        assert.strict.equal(aliasStub.firstCall.args[1], callbackA);
-        assert.strict.equal(aliasStub.firstCall.args[2], context1);
-    });
-
-    it('removeListener', () => {
-        const emitter   = new EventEmitter();
-        const aliasStub = sinon.stub(emitter, 'off').returnsThis();
-
-        assert.strict.equal(emitter.removeListener('nuff', callbackA, context1), emitter);
-        assert.strict.equal(aliasStub.callCount, 1);
-        assert.strict.equal(aliasStub.firstCall.args.length, 3);
-        assert.strict.equal(aliasStub.firstCall.args[0], 'nuff');
-        assert.strict.equal(aliasStub.firstCall.args[1], callbackA);
-        assert.strict.equal(aliasStub.firstCall.args[2], context1);
-    });
-
-    it('trigger', () => {
-        const emitter   = new EventEmitter();
-        const aliasStub = sinon.stub(emitter, 'emit').returnsThis();
-
-        assert.strict.equal(emitter.trigger('nuff', callbackA, context1), emitter);
-        assert.strict.equal(aliasStub.callCount, 1);
-        assert.strict.equal(aliasStub.firstCall.args.length, 3);
-        assert.strict.equal(aliasStub.firstCall.args[0], 'nuff');
-        assert.strict.equal(aliasStub.firstCall.args[1], callbackA);
-        assert.strict.equal(aliasStub.firstCall.args[2], context1);
-    });
-
-    it('emit', () => {
-        const onNuff = sinon.spy();
-        const onNarf = sinon.spy();
-        const onAll  = sinon.spy();
+    it('emit', async () => {
+        const onNuff = sinon.stub().resolves(42);
+        const onNarf = sinon.stub();
+        const onAll  = sinon.stub().resolves(42);
 
         const emitter = new EventEmitter({
             on: {
@@ -113,9 +53,9 @@ describe('EventEmitter', () => {
             }
         });
 
-        assert.strict.equal(emitter.emit('nuff', 42, 22), emitter);
-        assert.strict.equal(emitter.emit('narf', 'roflcopter'), emitter);
-        assert.strict.equal(emitter.emit('lol', 'lal'), emitter);
+        assert.strict.equal(await emitter.emit('nuff', 42, 22), emitter);
+        assert.strict.equal(await emitter.emit('narf', 'roflcopter'), emitter);
+        assert.strict.equal(await emitter.emit('lol', 'lal'), emitter);
 
         assert.strict.equal(onNuff.callCount, 1);
         assert.strict.equal(onNuff.firstCall.thisValue, context1);

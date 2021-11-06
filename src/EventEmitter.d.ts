@@ -1,7 +1,7 @@
 export namespace EventEmitter {
     type EventName = string;
     type EventContext = object;
-    type EventListener = () => void;
+    type EventListener = () => Promise<void> | void;
 
     interface EventListenerData {
         name: EventName;
@@ -26,15 +26,7 @@ export default class EventEmitter {
     constructor(options: EventEmitter.ConstructorOptions);
 
     on(name: EventEmitter.EventName, listener: EventEmitter.EventListener, context?: EventEmitter.EventContext): this;
-    addListener(name: EventEmitter.EventName, listener: EventEmitter.EventListener, context?: EventEmitter.EventContext): this;
-    addEventListener(name: EventEmitter.EventName, listener: EventEmitter.EventListener, context?: EventEmitter.EventContext): this;
-
     once(name: EventEmitter.EventName, listener: EventEmitter.EventListener, context?: EventEmitter.EventContext): this;
-
     off(name?: EventEmitter.EventName | null, listener?: EventEmitter.EventListener | null, context?: EventEmitter.EventContext | null): this;
-    removeListener(name?: EventEmitter.EventName | null, listener?: EventEmitter.EventListener | null, context?: EventEmitter.EventContext | null): this;
-    removeEventListener(name?: EventEmitter.EventName | null, listener?: EventEmitter.EventListener | null, context?: EventEmitter.EventContext | null): this;
-
-    emit(name: EventEmitter.EventName, ...args: any[]): this;
-
+    emit(name: EventEmitter.EventName, ...args: any[]): Promise<this>;
 }
