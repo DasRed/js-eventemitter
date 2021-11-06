@@ -1,0 +1,11 @@
+{
+    "reporterEnabled": [
+        "mocha-junit-reporter",
+        "spec"
+    ],
+    "mochaJunitReporterReporterOptions": {
+        "mochaFile": "./coverage/mocha/results.xml",
+        "includePending": true,
+        "outputs": true
+    }
+}

@@ -1,28 +1,30 @@
 {
     "name": "eventemitter0",
-    "version": "2.1.0",
+    "version": "2.1.1",
     "description": "event emitter for node and browser",
-    "main": "./src/eventEmitter.js",
+    "main": "src/EventEmitter.js",
     "type": "module",
+    "engines": {
+        "node": ">=16.10.0",
+        "npm": ">=7.24.0"
+    },
     "scripts": {
-        "build": "rollup -c",
-        "prepublishOnly": "npm run build"
+        "prepublishOnly": "npm run test",
+        "test": "mocha --inline-diffs",
+        "coverage": "c8 mocha --inline-diffs",
+        "coveralls": "cat ./coverage/lcov.info | coveralls",
+        "postinstall": "mkdir -p ./node_modules/nyc/bin && ln -sf ../../c8/bin/c8.js ./node_modules/nyc/bin/nyc.js && echo https://memegenerator.net/img/instances/33868091.jpg"
     },
     "files": [
-        "/dist/*",
         "/src/*"
     ],
     "devDependencies": {
-        "@babel/core": "^7.12.3",
-        "@babel/plugin-proposal-optional-chaining": "^7.12.1",
-        "@babel/preset-env": "^7.12.1",
-        "@rollup/plugin-commonjs": "^20.0.0",
-        "@rollup/plugin-node-resolve": "^13.0.4",
-        "core-js": "^3.6.5",
-        "rollup": "^2.32.0",
-        "rollup-plugin-babel": "^4.4.0",
-        "rollup-plugin-clear": "^2.0.7",
-        "rollup-plugin-terser": "^7.0.2"
+        "c8": "^7.10.0",
+        "coveralls": "^3.1.1",
+        "mocha": "^9.1.3",
+        "mocha-junit-reporter": "^2.0.2",
+        "mocha-multi-reporters": "^1.5.1",
+        "sinon": "^12.0.1"
     },
     "repository": {
         "type": "git",
@@ -63,5 +65,26 @@
         "listeners",
         "listener",
         "listen"
-    ]
+    ],
+    "mocha": {
+        "recursive": true,
+        "extension": [
+            "test.js"
+        ],
+        "reporter": "mocha-multi-reporters",
+        "reporterOptions": {
+            "configFile": "./test/.reporter-rc.json"
+        }
+    },
+    "c8": {
+        "all": true,
+        "src": [
+            "./src"
+        ],
+        "check-coverage": false,
+        "reporter": [
+            "text",
+            "lcov"
+        ]
+    }
 }

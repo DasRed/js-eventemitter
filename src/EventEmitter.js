@@ -1,46 +1,32 @@
-/**
- * @typedef {Object} EventEmitterCaller
- * @property {function} callback
- * @property {Object} [context]
- */
-
-/**
- * @typedef {EventEmitterCaller} EventEmitterListener
- * @property {string} name
- */
-
-/**
- * @typedef {Object} EventEmitterConstructorOptions
- * @property {Object<string, Function|EventEmitterCaller>} [on]
- * @property {Object<string, Function|EventEmitterCaller>} [once]
- */
-
 const FILTERS = {
-    CALLBACK_CONTEXT: (/** EventEmitterListener */ listener, /** function */ callback, /** object */ context) => listener.callback !== callback && listener.context !== context,
-    CONTEXT:          (/** EventEmitterListener */ listener, /** function */ callback, /** object */ context) => listener.context !== context,
-    CALLBACK:         (/** EventEmitterListener */ listener, /** function */ callback, /** object */ context) => listener.callback !== callback,
+    CALLBACK_CONTEXT: (listener, callback, context) => listener.callback !== callback || listener.context !== context,
+    CONTEXT:          (listener, callback, context) => listener.context !== context,
+    CALLBACK:         (listener, callback) => listener.callback !== callback,
 };
 
 export default class EventEmitter {
     static CATCH_ALL = '*';
 
+    /** @type {Object<EventEmitter.EventName,EventEmitter.EventListenerData[]>} */
+    _listeners;
+
     /**
      *
-     * @param {EventEmitterConstructorOptions}
+     * @param {EventEmitter.EventListeners} on
+     * @param {EventEmitter.EventListeners} once
      */
     constructor({on = {}, once = {}} = {}) {
-        /** @type {Object<string,EventEmitterListener[]>} */
         this._listeners = {};
 
-        Object.entries(on).forEach(([name, /** EventEmitterCaller|Function */ caller]) => this.on(name, caller?.callback || caller, caller?.context));
-        Object.entries(once).forEach(([name, /** EventEmitterCaller|Function */ caller]) => this.once(name, caller?.callback || caller, caller?.context));
+        Object.entries(on).forEach(([name, caller]) => this.on(name, caller?.callback ?? caller, caller?.context));
+        Object.entries(once).forEach(([name, caller]) => this.once(name, caller?.callback ?? caller, caller?.context));
     }
 
     /**
      *
-     * @param {string} name
-     * @param {Function} callback
-     * @param {object} [context]
+     * @param {EventEmitter.EventName} name
+     * @param {EventEmitter.EventListener} callback
+     * @param {EventEmitter.EventContext} [context]
      * @return {EventEmitter}
      */
     addEventListener(name, callback, context) {
@@ -49,9 +35,9 @@ export default class EventEmitter {
 
     /**
      *
-     * @param {string} name
-     * @param {Function} callback
-     * @param {object} [context]
+     * @param {EventEmitter.EventName} name
+     * @param {EventEmitter.EventListener} callback
+     * @param {EventEmitter.EventContext} [context]
      * @return {EventEmitter}
      */
     addListener(name, callback, context) {
@@ -60,74 +46,77 @@ export default class EventEmitter {
 
     /**
      *
-     * @param {string} name
-     * @param {*} [args]
+     * @param {EventEmitter.EventName} name
+     * @param {*[]} [args]
      * @return {EventEmitter}
      */
     emit(name, ...args) {
-        return this.trigger(name, ...args);
+        (this._listeners[name] || []).forEach((listener) => listener.callback.call(listener.context, ...args));
+        (this._listeners[EventEmitter.CATCH_ALL] || []).forEach((listener) => listener.callback.call(listener.context, name, ...args));
+
+        return this;
     }
 
     /**
      *
-     * @param {string|null|undefined} [name]
-     * @param {Function|null|undefined} [callback]
-     * @param {object|null|undefined} [context]
+     * @param {EventEmitter.EventName|null} [name]
+     * @param {EventEmitter.EventListener|null} [callback]
+     * @param {EventEmitter.EventContext|null} [context]
      * @return {EventEmitter}
      */
     off(name, callback, context) {
         let listener = [];
         let filter   = () => false;
 
-        // remove all
+        // #1 remove all
         if (name == null && callback == null && context == null) {
             this._listeners = {};
             return this;
         }
 
-        // remove all for name
+        // #2 remove all for name
         if (name != null && callback == null && context == null) {
             delete this._listeners[name];
             return this;
         }
 
-        // remove all for name and callback
+        // #3 remove all for name and callback
         if (name != null && callback != null && context == null) {
             listener = [this._listeners[name] || []];
             filter   = FILTERS.CALLBACK;
         }
 
-        // remove all for name and callback and context
+        // #4 remove all for name and callback and context
         else if (name != null && callback != null && context != null) {
             listener = [this._listeners[name] || []];
             filter   = FILTERS.CALLBACK_CONTEXT;
         }
 
-        // remove all for callback and context
+        // #5 remove all for callback and context
         else if (name == null && callback != null && context != null) {
             listener = Object.values(this._listeners);
             filter   = FILTERS.CALLBACK_CONTEXT;
         }
 
-        // remove all for name and context
+        // #6 remove all for name and context
         else if (name != null && callback == null && context != null) {
             listener = [this._listeners[name] || []];
             filter   = FILTERS.CONTEXT;
         }
 
-        // remove all for context
+        // #7 remove all for context
         else if (name == null && callback == null && context != null) {
             listener = Object.values(this._listeners);
             filter   = FILTERS.CONTEXT;
         }
 
-        // remove all for callback
+        // #8 remove all for callback
         else if (name == null && callback != null && context == null) {
             listener = Object.values(this._listeners);
             filter   = FILTERS.CALLBACK;
         }
 
-        listener.forEach((/** EventEmitterListener[] */ listener) => {
+        listener.forEach((listener) => {
             for (let i = listener.length - 1; i >= 0; i--) {
                 if (filter(listener[i], callback, context) === false) {
                     listener.splice(i, 1);
@@ -140,15 +129,14 @@ export default class EventEmitter {
 
     /**
      *
-     * @param {string} name
-     * @param {Function} callback
-     * @param {object} [context]
+     * @param {EventEmitter.EventName} name
+     * @param {EventEmitter.EventListener} callback
+     * @param {EventEmitter.EventContext} [context]
      * @return {EventEmitter}
      */
     on(name, callback, context) {
         this._listeners[name] = this._listeners[name] || [];
         this._listeners[name].push({
-            name,
             callback,
             context,
         });
@@ -158,9 +146,9 @@ export default class EventEmitter {
 
     /**
      *
-     * @param {string} name
-     * @param {Function} callback
-     * @param {object} [context]
+     * @param {EventEmitter.EventName} name
+     * @param {EventEmitter.EventListener} callback
+     * @param {EventEmitter.EventContext} [context]
      * @return {EventEmitter}
      */
     once(name, callback, context) {
@@ -174,9 +162,9 @@ export default class EventEmitter {
 
     /**
      *
-     * @param {string|null} [name]
-     * @param {Function|null} [callback]
-     * @param {object} [context]
+     * @param {EventEmitter.EventName|null} [name]
+     * @param {EventEmitter.EventListener|null} [callback]
+     * @param {EventEmitter.EventContext} [context]
      * @return {EventEmitter}
      */
     removeEventListener(name, callback, context) {
@@ -185,9 +173,9 @@ export default class EventEmitter {
 
     /**
      *
-     * @param {string|null} [name]
-     * @param {Function|null} [callback]
-     * @param {object} [context]
+     * @param {EventEmitter.EventName|null} [name]
+     * @param {EventEmitter.EventListener|null} [callback]
+     * @param {EventEmitter.EventContext} [context]
      * @return {EventEmitter}
      */
     removeListener(name, callback, context) {
@@ -195,14 +183,11 @@ export default class EventEmitter {
     }
 
     /**
-     * @param {string} name
-     * @param {*} [args]
+     * @param {EventEmitter.EventName} name
+     * @param {*[]} [args]
      * @return {EventEmitter}
      */
     trigger(name, ...args) {
-        (this._listeners[name] || []).forEach((/** EventEmitterListener */ listener) => listener.callback.call(listener.context, ...args));
-        (this._listeners[EventEmitter.CATCH_ALL] || []).forEach((/** EventEmitterListener */ listener) => listener.callback.call(listener.context, name, ...args));
-
-        return this;
+        return this.emit(name, ...args)
     }
 }
