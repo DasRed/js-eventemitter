@@ -1,7 +1,7 @@
 export namespace EventEmitter {
     type EventName = string;
     type EventContext = object;
-    type EventListener = () => Promise<void> | void;
+    type EventListener = (...args: any) => (Promise<any> | any);
 
     interface EventListenerData {
         name: EventName;

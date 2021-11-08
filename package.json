@@ -1,6 +1,6 @@
 {
     "name": "eventemitter0",
-    "version": "3.0.0",
+    "version": "3.0.1",
     "description": "event emitter for node and browser",
     "main": "src/EventEmitter.js",
     "type": "module",
